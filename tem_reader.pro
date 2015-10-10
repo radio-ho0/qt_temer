@@ -15,8 +15,10 @@ include(qextserialport/qextserialport.pri)
 
 
 SOURCES += main.cpp\
-        temreader.cpp
+        temreader.cpp \
+    parsetempr.cpp
 
-HEADERS  += temreader.h
+HEADERS  += temreader.h \
+    parsetempr.h
 
 FORMS    += temreader.ui
