@@ -22,3 +22,9 @@ HEADERS  += temreader.h \
     parsetempr.h
 
 FORMS    += temreader.ui
+
+QMAKEFEATURES+=/usr/local/qwt-6.1.2/features
+
+CONFIG += qwt
+
+include ( /usr/local/qwt-6.1.2/features/qwt.prf )

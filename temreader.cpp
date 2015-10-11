@@ -2,6 +2,7 @@
 #include "ui_temreader.h"
 #include "qextserialenumerator.h"
 #include "parsetempr.h"
+#include <qwt_dial_needle.h>
 #include <QDebug>
 
 TemReader::TemReader(QWidget *parent) :
@@ -62,6 +63,10 @@ TemReader::TemReader(QWidget *parent) :
     m_parseTempr->moveToThread(threadTemp);
     connect(threadTemp, SIGNAL(finished()), threadTemp, SLOT(deleteLater()));
     threadTemp->start();
+
+    ui->diaHiTemp->setValue(0.0);
+    ui->diaTemp->setValue(0.0);
+    ui->thermoHumi->setValue(0.0);
 }
 
 TemReader::~TemReader()
@@ -94,13 +99,14 @@ void TemReader::slStartStop()
         QextSerialPort::QueryMode m_queryMode = (QextSerialPort::QueryMode)ui->comQueryMode->currentIndex();
         //m_parseTempr->start(name, m_portSettings, QextSerialPort::Polling);
         m_parseTempr->start(name, m_portSettings, m_queryMode);
+        ui->tabWidget->setCurrentWidget(ui->tab_2);
         qDebug() << "port name:: " <<  name << endl;
     }else{
 
         ui->lbStatus->setText(tr("I am stand ready!"));
         m_parseTempr->stopSerial();
     }
-    ui->tabWidget->setCurrentWidget(ui->tab_2);
+
 
 
 }
@@ -131,6 +137,10 @@ void TemReader::slGetTargetString(QByteArray data)
     ui->spinHumi->setValue(humidity);
     ui->spinTemp->setValue(temp);
     ui->spinTempf->setValue(tempf);
+
+    ui->diaHiTemp->setValue(hiTemp);
+    ui->diaTemp->setValue(temp);
+    ui->thermoHumi->setValue(humidity);
 
 
 }

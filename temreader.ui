@@ -16,7 +16,7 @@
   <widget class="QTabWidget" name="tabWidget">
    <property name="geometry">
     <rect>
-     <x>20</x>
+     <x>10</x>
      <y>10</y>
      <width>541</width>
      <height>511</height>
@@ -57,7 +57,7 @@
       <rect>
        <x>370</x>
        <y>40</y>
-       <width>154</width>
+       <width>156</width>
        <height>201</height>
       </rect>
      </property>
@@ -247,10 +247,58 @@
       </item>
      </layout>
     </widget>
+    <widget class="QwtThermo" name="thermoHumi" native="true">
+     <property name="geometry">
+      <rect>
+       <x>420</x>
+       <y>10</y>
+       <width>60</width>
+       <height>250</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QwtDial" name="diaTemp" native="true">
+     <property name="geometry">
+      <rect>
+       <x>30</x>
+       <y>250</y>
+       <width>171</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="lineWidth" stdset="0">
+      <number>4</number>
+     </property>
+    </widget>
+    <widget class="QwtDial" name="diaHiTemp" native="true">
+     <property name="geometry">
+      <rect>
+       <x>230</x>
+       <y>50</y>
+       <width>200</width>
+       <height>200</height>
+      </rect>
+     </property>
+     <property name="lineWidth" stdset="0">
+      <number>4</number>
+     </property>
+    </widget>
    </widget>
   </widget>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QwtDial</class>
+   <extends>QWidget</extends>
+   <header>qwt_dial.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QwtThermo</class>
+   <extends>QWidget</extends>
+   <header>qwt_thermo.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
