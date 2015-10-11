@@ -2,6 +2,7 @@
 #define TEMREADER_H
 
 #include <QWidget>
+#include <QThread>
 #include "qextserialport.h"
 class parseTempr;
 namespace Ui {
@@ -24,13 +25,20 @@ private:
     void allConnect();
     PortSettings m_portSettings;
     parseTempr*   m_parseTempr;
+    QThread* threadTemp;
 
 private slots:
     void slStartStop();
     void slGetData(QByteArray data);
-    void slChangeTimeout();
     void slExit();
-    void slPortChange();
+
+    void slBaudRateChange(int idx);
+    void slParifyChange(int idx);
+    void slDataBitsChange(int idx);
+    void slStopBitsChange(int idx);
+    void slQueryModeChange(int idx);
+    void slChangeTimeout();
+    void slGetTargetString(QByteArray data);
 
 
 

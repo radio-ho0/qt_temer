@@ -46,20 +46,29 @@ TemReader::TemReader(QWidget *parent) :
 
 
 
+
     m_portSettings.BaudRate = (BaudRateType)ui->comBaudRate->itemData( ui->comBaudRate->currentIndex() ).toInt();
     m_portSettings.DataBits = (DataBitsType)ui->comDataBits->itemData( ui->comDataBits->currentIndex() ).toInt();
     m_portSettings.Parity = (ParityType)ui->comParify->itemData( ui->comParify->currentIndex() ).toInt();
     m_portSettings.StopBits = (StopBitsType)ui->comStopBits->itemData( ui->comStopBits->currentIndex()).toInt();
     m_portSettings.FlowControl = FLOW_OFF;
     m_portSettings.Timeout_Millisec = ui->spinTimeout->value();
-    m_parseTempr = new parseTempr(this);
+    //m_parseTempr = new parseTempr(this);
+    m_parseTempr = new parseTempr();
     connect(m_parseTempr, SIGNAL(sendData(QByteArray)), SLOT(slGetData(QByteArray)));
+    connect(m_parseTempr, SIGNAL(sendTargetStr(QByteArray)), SLOT(slGetTargetString(QByteArray)));
 
+    threadTemp = new QThread(this);
+    m_parseTempr->moveToThread(threadTemp);
+    connect(threadTemp, SIGNAL(finished()), threadTemp, SLOT(deleteLater()));
+    threadTemp->start();
 }
 
 TemReader::~TemReader()
 {
     delete ui;
+    threadTemp->quit();
+    threadTemp->wait();
 }
 
 void TemReader::allConnect()
@@ -67,6 +76,13 @@ void TemReader::allConnect()
     connect(ui->btOpenStop, SIGNAL(clicked()), SLOT(slStartStop()));
     connect(ui->spinTimeout, SIGNAL(valueChanged(int)), SLOT(slChangeTimeout()));
     connect(ui->btExit, SIGNAL(clicked()), SLOT(slExit()));
+    connect(ui->comBaudRate, SIGNAL(currentIndexChanged(int)), SLOT(slBaudRateChange(int)));
+    connect(ui->comDataBits, SIGNAL(currentIndexChanged(int)), SLOT(slDataBitsChange(int)));
+    connect(ui->comParify, SIGNAL(currentIndexChanged(int)), SLOT(slParifyChange(int)));
+    connect(ui->comQueryMode, SIGNAL(currentIndexChanged(int)),
+            SLOT(slQueryModeChange(int)));
+    connect(ui->comStopBits, SIGNAL(currentIndexChanged(int)),SLOT(slStopBitsChange(int)));
+
 }
 
 void TemReader::slStartStop()
@@ -84,6 +100,7 @@ void TemReader::slStartStop()
         ui->lbStatus->setText(tr("I am stand ready!"));
         m_parseTempr->stopSerial();
     }
+    ui->tabWidget->setCurrentWidget(ui->tab_2);
 
 
 }
@@ -97,18 +114,63 @@ void TemReader::slGetData(QByteArray data)
 
 void TemReader::slChangeTimeout()
 {
-        m_portSettings.Timeout_Millisec = ui->spinTimeout->value();
+    m_portSettings.Timeout_Millisec = ui->spinTimeout->value();
 
+}
+
+void TemReader::slGetTargetString(QByteArray data)
+{
+
+    QStringList list = QString::fromUtf8(data).split(',');
+    double hiTemp = list.at( parseTempr::HI_TEMP_OFFSET ).toDouble();
+    double humidity = list.at( parseTempr::HUMIDITY_OFFSET ).toDouble();
+    double temp = list.at( parseTempr::TEMP_OFFSET ).toDouble();
+    double tempf = list.at( parseTempr::TEMPF_OFFSET ).toDouble();
+
+    ui->spinHiTemp->setValue(hiTemp);
+    ui->spinHumi->setValue(humidity);
+    ui->spinTemp->setValue(temp);
+    ui->spinTempf->setValue(tempf);
+
+
+}
+
+void TemReader::slBaudRateChange(int idx)
+{
+    m_portSettings.BaudRate = (BaudRateType)ui->comBaudRate->itemData( idx ).toInt();
+
+}
+
+void TemReader::slParifyChange(int idx)
+{
+    m_portSettings.Parity = (ParityType)ui->comParify->itemData( idx ).toInt();
+}
+
+void TemReader::slDataBitsChange(int idx)
+{
+    m_portSettings.DataBits = (DataBitsType)ui->comDataBits->itemData( idx ).toInt();
+}
+
+void TemReader::slStopBitsChange(int idx)
+{
+    m_portSettings.StopBits = (StopBitsType)ui->comStopBits->itemData( idx ).toInt();
+}
+
+void TemReader::slQueryModeChange(int idx)
+{
+    Q_UNUSED(idx);
 }
 
 void TemReader::slExit()
 {
     m_parseTempr->stopSerial();
-    this->deleteLater();
+    this->close();
+
+    connect(ui->comBaudRate, SIGNAL(currentIndexChanged(int)), SLOT(slBaudRateChange(int)));
+    connect(ui->comDataBits, SIGNAL(currentIndexChanged(int)), SLOT(slDataBitsChange(int)));
+    connect(ui->comParify, SIGNAL(currentIndexChanged(int)), SLOT(slParifyChange(int)));
+    connect(ui->comQueryMode, SIGNAL(currentIndexChanged(int)), SLOT(slQueryModeChange(int)));
+    connect(ui->comStopBits, SIGNAL(currentIndexChanged(int)), SLOT(slStopBitsChange(int)));
 
 }
 
-void TemReader::slPortChange()
-{
-
-}
