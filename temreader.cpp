@@ -67,6 +67,12 @@ TemReader::TemReader(QWidget *parent) :
     ui->diaHiTemp->setValue(0.0);
     ui->diaTemp->setValue(0.0);
     ui->thermoHumi->setValue(0.0);
+
+    ui->diaHiTemp->setNeedle( new QwtDialSimpleNeedle( QwtDialSimpleNeedle::Ray,
+                                                       true, Qt::black )   );
+    ui->diaTemp->setNeedle( new QwtDialSimpleNeedle( QwtDialSimpleNeedle::Ray,
+                                                     true, Qt::green )   );
+
 }
 
 TemReader::~TemReader()
